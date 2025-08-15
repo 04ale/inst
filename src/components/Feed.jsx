@@ -1,0 +1,58 @@
+// src/components/Feed.jsx
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "../services/FirebaseConfig";
+import { Heart, User } from "lucide-react";
+
+function Feed() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const postsCollectionRef = collection(db, "posts");
+        const q = query(postsCollectionRef, orderBy("timestamp", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        const postsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setPosts(postsData);
+      } catch (error) {
+        console.error("Erro ao buscar posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <p>Carregando feed...</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-12">
+      {posts.map((post) => (
+        <div key={post.id} className="flex flex-col gap-4">
+          <div className="flex gap-2 pl-4">
+            <User className="rounded-2xl bg-black text-white p-1"/>
+            <p className="font-semibold">{post.username}</p>
+          </div>
+          <img src={post.imageUrl} className="w-full h-165 border-1 border-gray-200 rounded-lg" />
+          <div className="flex flex-row gap-2">
+          <Heart className="ml-4"/>
+          <p className="font-bold">{post.likesCount}</p>
+          </div>
+          <p className="pl-4"><span className="font-bold">{post.username}</span>: {post.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default Feed;
