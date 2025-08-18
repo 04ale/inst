@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, db, storage } from '../services/FirebaseConfig';
-import { addDoc, collection, serverTimestamp, doc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 } from 'uuid';
-import { X } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, db, storage } from "../services/FirebaseConfig";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  doc,
+  getDoc,
+  updateDoc,
+  increment
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from "uuid";
+import { X } from "lucide-react";
 
 function NewPost({ onClose }) {
   const [imageFile, setImageFile] = useState(null);
@@ -26,14 +34,9 @@ function NewPost({ onClose }) {
     setLoading(true);
 
     const user = auth.currentUser;
-    if (!user) {
-      alert("Você precisa estar logado para postar.");
-      setLoading(false);
-      return;
-    }
 
     try {
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
       const userData = userDoc.exists() ? userDoc.data() : {};
 
@@ -41,20 +44,24 @@ function NewPost({ onClose }) {
       await uploadBytes(imageRef, imageFile);
       const imageUrl = await getDownloadURL(imageRef);
 
-      await addDoc(collection(db, 'posts'), {
+      await addDoc(collection(db, "posts"), {
         userId: user.uid,
         username: userData.username || user.email,
-        userProfilePicUrl: userData.profilePicUrl || "",
+        profilePicUrl: userData.profilePicUrl || "",
         imageUrl: imageUrl,
         description: description,
-        profilePicUrl: profilePicUrl,
         likesCount: 0,
         timestamp: serverTimestamp(),
       });
 
+      await updateDoc(userDocRef, {
+      postsN: increment(1),
+    });
+
       setLoading(false);
+      nav('/')
       onClose();
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
       console.error("Erro ao criar o post:", error);
       alert("Erro ao criar o post: " + error.message);
@@ -85,7 +92,7 @@ function NewPost({ onClose }) {
                 placeholder="Escreva uma legenda..."
                 className="border border-gray-300 w-full rounded-lg p-2 flex-grow resize-none focus:outline-none"
                 value={description}
-                onChange={(e)=> setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>
@@ -95,7 +102,7 @@ function NewPost({ onClose }) {
             disabled={loading}
             className="w-full mt-4 bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition-colors duration-200 shadow-sm flex-shrink-0 disabled:bg-indigo-300"
           >
-            {loading ? 'Publicando...' : 'Publicar'}
+            {loading ? "Publicando..." : "Publicar"}
           </button>
         </div>
       ) : (
@@ -105,7 +112,7 @@ function NewPost({ onClose }) {
           </h1>
           <div className="flex flex-col gap-4 justify-center items-center h-full">
             <p className="text-lg font-semibold lg:text-2xl">
-              Arraste as fotos e os vídeos aqui
+              Escolha sua foto aqui
             </p>
             <input
               type="file"
@@ -118,7 +125,7 @@ function NewPost({ onClose }) {
               htmlFor="file-upload"
               className="cursor-pointer lg:text-xl rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600"
             >
-              <span>Selecionar do computador</span>
+              <span>Selecionar foto</span>
             </label>
           </div>
         </div>

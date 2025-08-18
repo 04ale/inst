@@ -12,10 +12,13 @@ import {
   User,
 } from "lucide-react";
 import NewPost from "./NewPost";
+import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../Authentication";
 
 function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser, loading } = useAuth();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -35,21 +38,27 @@ function Navbar() {
         </div>
       </div>
       <div className="py-5 px-4 fixed flex bg-white justify-around w-full bottom-0 md:hidden border-t-gray-50 shadow-[0_-2px_10px_rgba(0,0,0,0.12)]">
-        <House />
+        <Link to="/">
+          <House />
+        </Link>
         <Search />
-        <SquarePlus  onClick={openModal}/>
+        <SquarePlus onClick={openModal} />
         <Film />
-        <User />
+        <Link to={`/userprofile/${currentUser.uid}`}>
+          <User />
+        </Link>
       </div>
       <div className="px-8 py-8 pb-14 xl:pr-30 fixed h-full max-md:hidden border-b-gray-50 shadow-md flex flex-col justify-between">
         <div className="flex flex-col gap-12">
           <Instagram className="hover:bg-gray-100 xl:hidden hover:rounded-lg cursor-pointer" />
           <img src={logo} className="h-8 cursor-pointer max-xl:hidden" />
           <div className="flex flex-col gap-7">
-            <div className="flex items-center flex-row gap-3">
-              <House className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" />
-              <p className="max-xl:hidden">Página inicial</p>
-            </div>
+            <Link to='/'>
+              <div className="flex items-center flex-row gap-3">
+                <House className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" />
+                <p className="max-xl:hidden">Página inicial</p>
+              </div>
+            </Link>
             <div className="flex items-center flex-row gap-3">
               <Search className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" />
               <p className="max-xl:hidden">Pesquisa</p>
@@ -77,10 +86,12 @@ function Navbar() {
               />
               <p className="max-xl:hidden">Criar</p>
             </div>
-            <div className="flex items-center flex-row gap-3">
-              <User className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" />
-              <p className="max-xl:hidden">Usuário</p>
-            </div>
+            <Link to={`/userprofile/${currentUser.uid}`}>
+              <div className="flex items-center flex-row gap-3">
+                <User className="hover:bg-gray-100 hover:rounded-lg cursor-pointer" />
+                <p className="max-xl:hidden">Usuário</p>
+              </div>
+            </Link>
           </div>
         </div>
         <div className="flex items-center flex-row gap-3">

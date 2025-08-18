@@ -6,7 +6,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   const { currentUser, loading } = useAuth();
@@ -27,8 +27,8 @@ function App() {
           element={currentUser ? <Home /> : <Navigate to="/login" />}
         />
         <Route
-          path="/profile"
-          element={currentUser ? <Profile /> : <Navigate to="/login" />}
+          path="/userprofile/:userId"
+          element={currentUser ? <UserProfile /> : <Navigate to="/login" />}
         />
 
         <Route

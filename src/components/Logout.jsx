@@ -17,12 +17,7 @@ function Logout() {
 
   return (
     <div>
-      <button
-        onClick={handleLogout}
-        className="rounded-md px-3 py-2 bg-blue-400 text-white cursor-pointer"
-      >
-        Logout
-      </button>
+
     </div>
   );
 }
