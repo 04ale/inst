@@ -64,8 +64,7 @@ function Profile() {
 
   return (
     <div>
-      <Navbar />
-      <div className="md:ml-45 xl:ml-80 2xl:ml-130 pt-24 px-4 md:px-16 max-w-4xl mx-auto">
+      <div className="pt-24 px-4 max-w-4xl mx-auto">
         <div className="flex items-center gap-8 md:gap-16">
           <div className="flex-shrink-0">
             {userProfile.profilePicUrl ? (
@@ -115,14 +114,9 @@ function Profile() {
           </div>
         </div>
 
-        <div className="mt-10">
-          <CircleFadingPlus size={50}/>
+        <div className="mt-8 ">
+          <CircleFadingPlus size={60}/>
           <p>New</p>
-        </div>
-
-
-        <div className="border-t border-gray-300 mt-10 pt-4">
-          <p className="text-center text-gray-400">Nenhuma publicação ainda.</p>
         </div>
       </div>
 

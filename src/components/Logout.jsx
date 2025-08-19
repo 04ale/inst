@@ -17,7 +17,7 @@ function Logout() {
 
   return (
     <div>
-
+      <button onClick={handleLogout}> dadawda</button>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserProfile from "./pages/UserProfile";
+import UserFeed from "./pages/UserFeed";
 
 function App() {
   const { currentUser, loading } = useAuth();
@@ -29,6 +30,10 @@ function App() {
         <Route
           path="/userprofile/:userId"
           element={currentUser ? <UserProfile /> : <Navigate to="/login" />}
+        />
+         <Route
+          path="/userfeed/:userId"
+          element={currentUser ? <UserFeed /> : <Navigate to="/login" />}
         />
 
         <Route

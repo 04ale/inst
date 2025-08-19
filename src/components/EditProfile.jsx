@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../services/FirebaseConfig";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function EditProfile({ onClose, onLogout, onDelete }) {
   const [newName, setNewName] = useState("");
@@ -13,6 +14,7 @@ function EditProfile({ onClose, onLogout, onDelete }) {
   const [newProfilePicFile, setNewProfilePicFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const { userId } = useParams();
+  const nav = useNavigate()
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
@@ -43,6 +45,18 @@ function EditProfile({ onClose, onLogout, onDelete }) {
       alert("Erro ao atualizar a foto.");
     }
   };
+
+  const handleDeleteAccount = async () => {
+    const delRef = doc(db, 'users', userId)
+
+    try{
+      await deleteDoc(delRef)
+      console.log('User deleted')
+      onLogout()
+    } catch (erro) {
+      console.log('Failed to delete user', erro)
+    }
+  }
 
   const handleUpdate = async () => {
     const editRef = doc(db, "users", userId);
@@ -119,7 +133,7 @@ function EditProfile({ onClose, onLogout, onDelete }) {
               Logout
             </button>
             <button
-              onClick={onLogout}
+              onClick={handleDeleteAccount}
               className="text-lg font-semibold bg-gray-100 border w-full rounded-lg cursor-pointer py-2 hover:bg-gray-200"
             >
               Delete account

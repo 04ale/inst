@@ -4,7 +4,7 @@ import { collection, getDocs, query, orderBy, doc } from "firebase/firestore";
 import { db } from "../services/FirebaseConfig";
 import { Heart, User } from "lucide-react";
 
-function Feed() {
+function UserPics() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
@@ -88,4 +88,4 @@ function Feed() {
   );
 }
 
-export default Feed;
+export default UserPics;

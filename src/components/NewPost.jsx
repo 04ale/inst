@@ -50,6 +50,7 @@ function NewPost({ onClose }) {
         profilePicUrl: userData.profilePicUrl || "",
         imageUrl: imageUrl,
         description: description,
+        likedBy: [],
         likesCount: 0,
         timestamp: serverTimestamp(),
       });
