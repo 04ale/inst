@@ -7,9 +7,8 @@ function UserProfile() {
   return (
     <div>
       <Navbar />
-      <div className="flex flex-col gap-4 md:px-34  md:pl-45 xl:ml-80 2xl:ml-130 ">
+      <div className="flex flex-col gap-4 md:px-34  md:pl-45 xl:ml-80">
         <Profile />
-        <OwnPosts />
       </div>
     </div>
   );

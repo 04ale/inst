@@ -7,12 +7,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import EditProfile from "./EditProfile";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/FirebaseConfig";
+import OwnPosts from "./OwnPosts";
+import { useAuth } from "../Authentication";
 
 function Profile() {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const { userId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {currentUser} = useAuth()
   const nav = useNavigate();
 
   const openModal = () => {
@@ -35,7 +38,7 @@ function Profile() {
 
   const deleteUser = async () => {
     await deleteDoc(userDocRef);
-  }
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -94,15 +97,15 @@ function Profile() {
 
             <div className="flex flex-row gap-6 text-base">
               <div className="flex flex-col md:flex-row md:gap-1">
-                <span className="font-semibold">{userProfile.postsN}</span> 
+                <span className="font-semibold">{userProfile.postsN}</span>
                 <p className="text-gray-500">posts</p>
               </div>
               <div className="flex flex-col md:flex-row md:gap-1">
-                <span className="font-semibold">{userProfile.followersN}</span> 
+                <span className="font-semibold">{userProfile.followersN}</span>
                 <p className="text-gray-500">followers</p>
               </div>
               <div className="flex flex-col md:flex-row md:gap-1">
-                <span className="font-semibold">{userProfile.followingN}</span> 
+                <span className="font-semibold">{userProfile.followingN}</span>
                 <p className="text-gray-500">following</p>
               </div>
             </div>
@@ -111,17 +114,29 @@ function Profile() {
               <p className="font-semibold">{userProfile.name}</p>
               <p className="text-gray-700">{userProfile.bio}</p>
             </div>
+            {currentUser ? <div className="flex justify-center"><button className="p-2 w-30 text-center rounded-xl bg-sky-400 hover:bg-sky-500 text-white ">Seguir</button></div> : <div></div>  }
           </div>
         </div>
 
         <div className="mt-8 ">
-          <CircleFadingPlus size={60}/>
+          <CircleFadingPlus size={60} />
           <p>New</p>
         </div>
       </div>
+      {userProfile.postsN ? (
+        <OwnPosts />
+      ) : (
+        <div className="text-center w-full border-t-1 border-t-gray-300 py-8 mt-8">
+          Nenhuma publicação.
+        </div>
+      )}
 
       {isModalOpen && (
-        <EditProfile onClose={closeModal} onLogout={handleLogout} onDelete={deleteUser}/>
+        <EditProfile
+          onClose={closeModal}
+          onLogout={handleLogout}
+          onDelete={deleteUser}
+        />
       )}
     </div>
   );

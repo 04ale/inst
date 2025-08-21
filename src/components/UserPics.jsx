@@ -1,20 +1,31 @@
 // src/components/Feed.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { collection, getDocs, query, orderBy, doc } from "firebase/firestore";
 import { db } from "../services/FirebaseConfig";
 import { Heart, User } from "lucide-react";
+import Navbar from "./Navbar";
+import { useLocation, useParams } from "react-router-dom";
+import { where } from "firebase/firestore";
 
 function UserPics() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0)
+  const [likesCount, setLikesCount] = useState(0);
+  const { userId } = useParams();
+  const location = useLocation();
+  const selectedPostId = location.state?.selectedPostId;
+
+  const postRefs = useRef(new Map());
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const postsCollectionRef = collection(db, "posts");
-        const q = query(postsCollectionRef, orderBy("timestamp", "desc"));
+        const q = query(
+          postsCollectionRef,
+          where("userId", "==", userId)
+        );
         const querySnapshot = await getDocs(q);
 
         const postsData = querySnapshot.docs.map((doc) => ({
@@ -33,6 +44,16 @@ function UserPics() {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    if (selectedPostId && postRefs.current.has(selectedPostId)) {
+      const node = postRefs.current.get(selectedPostId);
+      node.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [posts, selectedPostId]);
+
   const likePost = async () => {
     setLiked(!liked);
     console.log(liked, "teste");
@@ -49,7 +70,16 @@ function UserPics() {
   return (
     <div className="flex flex-col gap-12">
       {posts.map((post) => (
-        <div key={post.id} className="flex flex-col gap-4">
+        <div
+          key={post.id}
+          ref={(node) => {
+            const map = postRefs.current;
+            if (node) {
+              map.set(post.id, node);
+            } 
+          }}
+          className="flex flex-col gap-4"
+        >
           <div className="flex gap-2 pl-4 items-center">
             {post.profilePicUrl ? (
               <img
@@ -68,7 +98,7 @@ function UserPics() {
           />
           {liked === false ? (
             <div className="flex flex-row gap-2">
-              <Heart className="ml-4" onClick={()=>likePost(posts.id)} />
+              <Heart className="ml-4" onClick={() => likePost(posts.id)} />
               <p className="font-bold">{post.likesCount}</p>
             </div>
           ) : (
