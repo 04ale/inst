@@ -5,6 +5,13 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../services/FirebaseConfig";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
 
 function EditProfile({ onClose, onLogout, onDelete }) {
   const [newName, setNewName] = useState("");
@@ -14,7 +21,7 @@ function EditProfile({ onClose, onLogout, onDelete }) {
   const [newProfilePicFile, setNewProfilePicFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const { userId } = useParams();
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
@@ -37,6 +44,20 @@ function EditProfile({ onClose, onLogout, onDelete }) {
       const newUrl = await getDownloadURL(fileRef);
       const userDocRef = doc(db, "users", user.uid);
       await updateDoc(userDocRef, { profilePicUrl: newUrl });
+
+      const postsQuery = query(
+        collection(db, "posts"),
+        where("userId", "==", user.uid)
+      );
+      const querySnapshot = await getDocs(postsQuery);
+      const batch = writeBatch(db);
+      querySnapshot.forEach((document) => {
+        const postRef = doc(db, "posts", document.id);
+        batch.update(postRef, { userProfilePicUrl: newUrl });
+      });
+
+      await batch.commit();
+
       alert("Foto de perfil atualizada com sucesso!");
       window.location.reload();
       onClose();
@@ -47,20 +68,25 @@ function EditProfile({ onClose, onLogout, onDelete }) {
   };
 
   const handleDeleteAccount = async () => {
-    const delRef = doc(db, 'users', userId)
+    const delRef = doc(db, "users", userId);
 
-    try{
-      await deleteDoc(delRef)
-      console.log('User deleted')
-      onLogout()
+    try {
+      await deleteDoc(delRef);
+      console.log("User deleted");
+      onLogout();
     } catch (erro) {
-      console.log('Failed to delete user', erro)
+      console.log("Failed to delete user", erro);
     }
-  }
+  };
 
   const handleUpdate = async () => {
     const editRef = doc(db, "users", userId);
     let dataToUpdate = {};
+
+    if (chosen == 3) {
+      await handleProfilePicUpdate();
+      return;
+    }
 
     switch (chosen) {
       case 0:
@@ -71,9 +97,6 @@ function EditProfile({ onClose, onLogout, onDelete }) {
         break;
       case 2:
         if (newBio) dataToUpdate.bio = newBio;
-        break;
-      case 3:
-        await handleProfilePicUpdate();
         break;
       default:
         break;

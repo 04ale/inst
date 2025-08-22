@@ -43,7 +43,7 @@ function Feed() {
   return (
     <div className="flex flex-col gap-12 max-w-lg mx-auto py-8">
       {posts.map((post) => (
-        <Post key={post.id} postData={post} />
+        <Post key={post.id} postData={post} /> 
       ))}
     </div>
   );

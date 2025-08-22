@@ -30,8 +30,8 @@ function SignUp() {
           "",
         username: username,
         postsN: 0,
-        followersN: 0,
-        followingN: 0
+        followedBy: [],
+        following: []
       });
 
       alert("Usuário registrado", user.user);

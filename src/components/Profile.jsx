@@ -15,7 +15,7 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const { userId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {currentUser} = useAuth()
+  const { currentUser } = useAuth();
   const nav = useNavigate();
 
   const openModal = () => {
@@ -87,12 +87,16 @@ function Profile() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-light">{userProfile.username}</h1>
-              <button
-                className="bg-gray-200 cursor-pointer px-4 py-1 text-sm font-semibold rounded-lg hover:bg-gray-300"
-                onClick={openModal}
-              >
-                Edit profile
-              </button>
+              {currentUser.uid === userId ? (
+                <button
+                  className="bg-gray-200 cursor-pointer px-4 py-1 text-sm font-semibold rounded-lg hover:bg-gray-300"
+                  onClick={openModal}
+                >
+                  Edit profile
+                </button>
+              ) : (
+                null
+              )}
             </div>
 
             <div className="flex flex-row gap-6 text-base">
@@ -101,11 +105,15 @@ function Profile() {
                 <p className="text-gray-500">posts</p>
               </div>
               <div className="flex flex-col md:flex-row md:gap-1">
-                <span className="font-semibold">{userProfile.followersN}</span>
+                <span className="font-semibold">
+                  {userProfile.followedBy.length}
+                </span>
                 <p className="text-gray-500">followers</p>
               </div>
               <div className="flex flex-col md:flex-row md:gap-1">
-                <span className="font-semibold">{userProfile.followingN}</span>
+                <span className="font-semibold">
+                  {userProfile.following.length}
+                </span>
                 <p className="text-gray-500">following</p>
               </div>
             </div>
@@ -114,7 +122,15 @@ function Profile() {
               <p className="font-semibold">{userProfile.name}</p>
               <p className="text-gray-700">{userProfile.bio}</p>
             </div>
-            {currentUser ? <div className="flex justify-center"><button className="p-2 w-30 text-center rounded-xl bg-sky-400 hover:bg-sky-500 text-white ">Seguir</button></div> : <div></div>  }
+            {currentUser.uid === userId ? (
+              null
+            ) : (
+              <div className="flex justify-center">
+                <button className="p-2 w-30 text-center rounded-xl bg-sky-400 hover:bg-sky-500 text-white ">
+                  Seguir
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import { Heart, User } from "lucide-react";
 import { auth } from "../services/FirebaseConfig";
 import { useAuth } from "../Authentication";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Post({ postData }) {
   const [isLiked, setIsLiked] = useState(false);
@@ -26,7 +27,7 @@ function Post({ postData }) {
   }, [postData.likedBy, currentUser]);
 
   useEffect(()=> {
-    const userRef = doc(db, 'users', users.username)
+
   }, [])
   
 
@@ -53,8 +54,8 @@ function Post({ postData }) {
   return (
     <div className="flex flex-col gap-12">
       <div key={postData.id} className="flex flex-col gap-4">
-        <div className="flex gap-2 pl-4 items-center">
-          <Link to={`/userprofile/${users.id}`}>
+        <div >
+          <Link className="flex gap-2 pl-4 items-center" to={`/userprofile/${postData.userId}`}>
             {postData.profilePicUrl ? (
               <img
                 src={postData.profilePicUrl}
